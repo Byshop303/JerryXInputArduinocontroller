@@ -1,22 +1,19 @@
 #include <XInput.h>
 
-// Digital button pin assignments
-const uint8_t PIN_BTN_A      = 2;
-const uint8_t PIN_BTN_B      = 3;
-const uint8_t PIN_BTN_X      = 4;
-const uint8_t PIN_BTN_Y      = 5;
-const uint8_t PIN_BTN_LB     = 6;
-const uint8_t PIN_BTN_RB     = 7;
-const uint8_t PIN_BTN_BACK   = 8;
-const uint8_t PIN_BTN_START  = 9;
-const uint8_t PIN_BTN_GUIDE  = 10;
-const uint8_t PIN_BTN_LS     = 11;
-const uint8_t PIN_BTN_RS     = 12;
+// Digital button pin assignments (hardware uses active-low wiring)
+const uint8_t PIN_BTN_BACK   = 2;  // Select
+const uint8_t PIN_BTN_START  = 3;
+const uint8_t PIN_BTN_Y      = 4;
+const uint8_t PIN_BTN_X      = 5;
+const uint8_t PIN_BTN_RB     = 6;
+const uint8_t PIN_BTN_A      = 7;
+const uint8_t PIN_BTN_B      = 8;
+const uint8_t PIN_BTN_RT     = 9;  // Digital right trigger
 
-const uint8_t PIN_DPAD_UP    = A8;
-const uint8_t PIN_DPAD_DOWN  = A9;
-const uint8_t PIN_DPAD_LEFT  = A10;
-const uint8_t PIN_DPAD_RIGHT = A11;
+const uint8_t PIN_DPAD_UP    = 10;
+const uint8_t PIN_DPAD_DOWN  = 11;
+const uint8_t PIN_DPAD_LEFT  = 12;
+const uint8_t PIN_DPAD_RIGHT = 13;
 
 // Analog stick pin assignments
 const uint8_t PIN_LX = A0;
@@ -25,8 +22,7 @@ const uint8_t PIN_RX = A2;
 const uint8_t PIN_RY = A3;
 
 // Trigger pin assignments
-const uint8_t PIN_LT = A4;
-const uint8_t PIN_RT = A5;
+const uint8_t PIN_LT = A4; // Analog left trigger input
 
 // Analog calibration constants
 const int ANALOG_CENTER = 512;      // Half of the 10-bit ADC range (0-1023)
@@ -73,9 +69,9 @@ void setup() {
   XInput.begin();
 
   const uint8_t buttonPins[] = {
-    PIN_BTN_A, PIN_BTN_B, PIN_BTN_X, PIN_BTN_Y,
-    PIN_BTN_LB, PIN_BTN_RB, PIN_BTN_BACK, PIN_BTN_START,
-    PIN_BTN_GUIDE, PIN_BTN_LS, PIN_BTN_RS,
+    PIN_BTN_BACK, PIN_BTN_START,
+    PIN_BTN_Y, PIN_BTN_X, PIN_BTN_RB,
+    PIN_BTN_A, PIN_BTN_B, PIN_BTN_RT,
     PIN_DPAD_UP, PIN_DPAD_DOWN, PIN_DPAD_LEFT, PIN_DPAD_RIGHT
   };
 
@@ -86,19 +82,13 @@ void setup() {
 
 void loop() {
   // Update face buttons
-  XInput.setButton(BUTTON_A, readButton(PIN_BTN_A));
-  XInput.setButton(BUTTON_B, readButton(PIN_BTN_B));
-  XInput.setButton(BUTTON_X, readButton(PIN_BTN_X));
-  XInput.setButton(BUTTON_Y, readButton(PIN_BTN_Y));
-  XInput.setButton(BUTTON_LB, readButton(PIN_BTN_LB));
-  XInput.setButton(BUTTON_RB, readButton(PIN_BTN_RB));
   XInput.setButton(BUTTON_BACK, readButton(PIN_BTN_BACK));
   XInput.setButton(BUTTON_START, readButton(PIN_BTN_START));
-#ifdef BUTTON_GUIDE
-  XInput.setButton(BUTTON_GUIDE, readButton(PIN_BTN_GUIDE));
-#endif
-  XInput.setButton(BUTTON_L3, readButton(PIN_BTN_LS));
-  XInput.setButton(BUTTON_R3, readButton(PIN_BTN_RS));
+  XInput.setButton(BUTTON_Y, readButton(PIN_BTN_Y));
+  XInput.setButton(BUTTON_X, readButton(PIN_BTN_X));
+  XInput.setButton(BUTTON_RB, readButton(PIN_BTN_RB));
+  XInput.setButton(BUTTON_A, readButton(PIN_BTN_A));
+  XInput.setButton(BUTTON_B, readButton(PIN_BTN_B));
 
   // Update D-Pad (hat switch) directions
   XInput.setDpad(readButton(PIN_DPAD_UP),
@@ -116,7 +106,7 @@ void loop() {
 
   // Update triggers
   XInput.setTrigger(TRIGGER_LEFT, normalizeTrigger(analogRead(PIN_LT)));
-  XInput.setTrigger(TRIGGER_RIGHT, normalizeTrigger(analogRead(PIN_RT)));
+  XInput.setTrigger(TRIGGER_RIGHT, readButton(PIN_BTN_RT) ? 255 : 0);
 
   // Push the update to the host
   XInput.send();
