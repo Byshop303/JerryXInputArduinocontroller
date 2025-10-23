@@ -94,7 +94,9 @@ void loop() {
   XInput.setButton(BUTTON_RB, readButton(PIN_BTN_RB));
   XInput.setButton(BUTTON_BACK, readButton(PIN_BTN_BACK));
   XInput.setButton(BUTTON_START, readButton(PIN_BTN_START));
+#ifdef BUTTON_GUIDE
   XInput.setButton(BUTTON_GUIDE, readButton(PIN_BTN_GUIDE));
+#endif
   XInput.setButton(BUTTON_L3, readButton(PIN_BTN_LS));
   XInput.setButton(BUTTON_R3, readButton(PIN_BTN_RS));
 
