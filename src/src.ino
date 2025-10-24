@@ -15,42 +15,15 @@ const uint8_t PIN_DPAD_DOWN  = 11;
 const uint8_t PIN_DPAD_LEFT  = 12;
 const uint8_t PIN_DPAD_RIGHT = 13;
 
-// Analog stick pin assignments
-const uint8_t PIN_LX = A0;
-const uint8_t PIN_LY = A1;
-const uint8_t PIN_RX = A2;
-const uint8_t PIN_RY = A3;
-
 // Trigger pin assignments
 const uint8_t PIN_LT = A4; // Analog left trigger input
 
+// Toggle pin assignment for enabling the left analog stick mirroring
+const uint8_t PIN_LS_ENABLE = 1; // Button on D1
+
 // Analog calibration constants
-const int ANALOG_CENTER = 512;      // Half of the 10-bit ADC range (0-1023)
-const int ANALOG_DEADZONE = 40;     // Small deadzone to filter noise
 const int ANALOG_MIN = 0;
 const int ANALOG_MAX = 1023;
-
-// Utility helper that normalizes a 10-bit analog reading to the
-// signed 16-bit range expected by the XInput library for thumbsticks.
-int normalizeStick(int rawValue) {
-  int offset = rawValue - ANALOG_CENTER;
-
-  if (abs(offset) < ANALOG_DEADZONE) {
-    return 0;
-  }
-
-  // map() uses long internally; constrain to avoid overflow.
-  long mapped = map(offset,
-                    ANALOG_MIN - ANALOG_CENTER,
-                    ANALOG_MAX - ANALOG_CENTER,
-                    -32768,
-                    32767);
-
-  if (mapped < -32768) mapped = -32768;
-  if (mapped > 32767) mapped = 32767;
-
-  return static_cast<int>(mapped);
-}
 
 // Utility helper that normalizes a 10-bit analog reading to the
 // unsigned 8-bit range expected for analog triggers (0-255).
@@ -72,7 +45,8 @@ void setup() {
     PIN_BTN_BACK, PIN_BTN_START,
     PIN_BTN_Y, PIN_BTN_X, PIN_BTN_RB,
     PIN_BTN_A, PIN_BTN_B, PIN_BTN_RT,
-    PIN_DPAD_UP, PIN_DPAD_DOWN, PIN_DPAD_LEFT, PIN_DPAD_RIGHT
+    PIN_DPAD_UP, PIN_DPAD_DOWN, PIN_DPAD_LEFT, PIN_DPAD_RIGHT,
+    PIN_LS_ENABLE
   };
 
   for (uint8_t pin : buttonPins) {
@@ -81,6 +55,15 @@ void setup() {
 }
 
 void loop() {
+  static bool leftStickEnabled = false;
+  static bool previousToggleState = false;
+
+  bool togglePressed = readButton(PIN_LS_ENABLE);
+  if (togglePressed && !previousToggleState) {
+    leftStickEnabled = !leftStickEnabled;
+  }
+  previousToggleState = togglePressed;
+
   // Update face buttons
   XInput.setButton(BUTTON_BACK, readButton(PIN_BTN_BACK));
   XInput.setButton(BUTTON_START, readButton(PIN_BTN_START));
@@ -90,19 +73,33 @@ void loop() {
   XInput.setButton(BUTTON_A, readButton(PIN_BTN_A));
   XInput.setButton(BUTTON_B, readButton(PIN_BTN_B));
 
-  // Update D-Pad (hat switch) directions
-  XInput.setDpad(readButton(PIN_DPAD_UP),
-                 readButton(PIN_DPAD_DOWN),
-                 readButton(PIN_DPAD_LEFT),
-                 readButton(PIN_DPAD_RIGHT));
+  bool dpadUp = readButton(PIN_DPAD_UP);
+  bool dpadDown = readButton(PIN_DPAD_DOWN);
+  bool dpadLeft = readButton(PIN_DPAD_LEFT);
+  bool dpadRight = readButton(PIN_DPAD_RIGHT);
 
-  // Update analog sticks
-  XInput.setJoystick(JOY_LEFT,
-                     normalizeStick(analogRead(PIN_LX)),
-                     normalizeStick(analogRead(PIN_LY)));
-  XInput.setJoystick(JOY_RIGHT,
-                     normalizeStick(analogRead(PIN_RX)),
-                     normalizeStick(analogRead(PIN_RY)));
+  // Update D-Pad (hat switch) directions
+  XInput.setDpad(dpadUp, dpadDown, dpadLeft, dpadRight);
+
+  // Update left analog stick based on D-Pad when enabled
+  int16_t leftX = 0;
+  int16_t leftY = 0;
+
+  if (leftStickEnabled) {
+    if (dpadLeft && !dpadRight) {
+      leftX = -32768;
+    } else if (dpadRight && !dpadLeft) {
+      leftX = 32767;
+    }
+
+    if (dpadUp && !dpadDown) {
+      leftY = -32768;
+    } else if (dpadDown && !dpadUp) {
+      leftY = 32767;
+    }
+  }
+
+  XInput.setJoystick(JOY_LEFT, leftX, leftY);
 
   // Update triggers
   XInput.setTrigger(TRIGGER_LEFT, normalizeTrigger(analogRead(PIN_LT)));
