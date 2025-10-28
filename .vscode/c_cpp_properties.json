@@ -16,15 +16,15 @@
             ],
             "intelliSenseMode": "gcc-x64",
             "includePath": [
-                "C:\\Users\\byshop\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\cores\\arduino",
-                "C:\\Users\\byshop\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\variants\\leonardo",
+                "C:\\Users\\byshop\\AppData\\Local\\Arduino15\\packages\\xinput\\hardware\\avr\\1.0.4\\cores\\arduino",
+                "C:\\Users\\byshop\\AppData\\Local\\Arduino15\\packages\\xinput\\hardware\\avr\\1.0.4\\variants\\leonardo",
                 "C:\\Users\\byshop\\OneDrive\\Documents\\Arduino\\libraries\\XInput\\src",
                 "c:\\users\\byshop\\appdata\\local\\arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7\\lib\\gcc\\avr\\7.3.0\\include",
                 "c:\\users\\byshop\\appdata\\local\\arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7\\lib\\gcc\\avr\\7.3.0\\include-fixed",
                 "c:\\users\\byshop\\appdata\\local\\arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7\\avr\\include"
             ],
             "forcedInclude": [
-                "C:\\Users\\byshop\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\cores\\arduino\\Arduino.h"
+                "C:\\Users\\byshop\\AppData\\Local\\Arduino15\\packages\\xinput\\hardware\\avr\\1.0.4\\cores\\arduino\\Arduino.h"
             ],
             "cStandard": "c11",
             "cppStandard": "c++11",
@@ -33,9 +33,9 @@
                 "ARDUINO=10607",
                 "ARDUINO_AVR_LEONARDO",
                 "ARDUINO_ARCH_AVR",
-                "USB_VID=0x2341",
-                "USB_PID=0x8036",
-                "USB_MANUFACTURER=\"Unknown\"",
+                "USB_VID=0x045E",
+                "USB_PID=0x028E",
+                "USB_MANUFACTURER=\"\\xA9Microsoft\"",
                 "USB_PRODUCT=\"Arduino Leonardo\"",
                 "__DBL_MIN_EXP__=(-125)",
                 "__HQ_FBIT__=15",

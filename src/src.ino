@@ -15,9 +15,6 @@ const uint8_t PIN_DPAD_DOWN  = 11;
 const uint8_t PIN_DPAD_LEFT  = 12;
 const uint8_t PIN_DPAD_RIGHT = 13;
 
-// Trigger pin assignments
-const uint8_t PIN_LT = A4; // Analog left trigger input
-
 // Toggle pin assignment for enabling the left analog stick mirroring
 const uint8_t PIN_LS_ENABLE = 1; // Button on D1
 
@@ -92,9 +89,9 @@ void loop() {
       leftX = 32767;
     }
 
-    if (dpadUp && !dpadDown) {
+    if (!dpadUp && dpadDown) {
       leftY = -32768;
-    } else if (dpadDown && !dpadUp) {
+    } else if (dpadUp && !dpadDown) {
       leftY = 32767;
     }
   }
@@ -102,7 +99,6 @@ void loop() {
   XInput.setJoystick(JOY_LEFT, leftX, leftY);
 
   // Update triggers
-  XInput.setTrigger(TRIGGER_LEFT, normalizeTrigger(analogRead(PIN_LT)));
   XInput.setTrigger(TRIGGER_RIGHT, readButton(PIN_BTN_RT) ? 255 : 0);
 
   // Push the update to the host
