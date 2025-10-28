@@ -100,6 +100,7 @@ void loop() {
 
   // Update triggers
   XInput.setTrigger(TRIGGER_RIGHT, readButton(PIN_BTN_RT) ? 255 : 0);
+  XInput.setTrigger(TRIGGER_LEFT, 0);
 
   // Push the update to the host
   XInput.send();
